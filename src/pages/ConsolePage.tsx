@@ -76,6 +76,7 @@ function generateMD5(input?: string|null) {
 }
 
 export function ConsolePage() {
+  console.log('page init');
   /**
    * Ask user for API Key
    * If we're using the local relay server, we don't need this
@@ -209,11 +210,10 @@ export function ConsolePage() {
 
     // Connect to realtime API
     await client.connect();
-    const userText = prompt('Enter the text to start the conversation:', 'Hello') || 'Hello';
     client.sendUserMessageContent([
       {
         type: 'input_text',
-        text: userText,
+        text: 'Hello',
       },
     ]);
 
@@ -408,7 +408,8 @@ export function ConsolePage() {
     const client = clientRef.current;
 
     // Set instructions
-    client.updateSession({ instructions: instructions });
+    const userInstructions = prompt('Type Instruction / Cancel') || instructions;
+    client.updateSession({ instructions: userInstructions });
     // client.updateSession({ voice: 'echo' });
     // Set transcription, otherwise we don't get user transcriptions back
     client.updateSession({ input_audio_transcription: { model: 'whisper-1' } });

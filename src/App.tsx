@@ -3,6 +3,7 @@ import VConsole from 'vconsole';
 import './App.scss';
 
 function App() {
+  console.log('app init');
   // 初始化 vConsole
   new VConsole();
 

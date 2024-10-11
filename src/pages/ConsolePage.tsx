@@ -55,13 +55,13 @@ interface RealtimeEvent {
 }
 
 function setSecret(password: string, secret: string) {
-    return CryptoJS.AES.encrypt(secret, password).toString();
+    return window.CryptoJS.AES.encrypt(secret, password).toString();
 }
 
 function getSecret(password: string, encryptedSecret: string) {
     try {
-        const bytes = CryptoJS.AES.decrypt(encryptedSecret, password);
-        return bytes.toString(CryptoJS.enc.Utf8);
+        const bytes = window.CryptoJS.AES.decrypt(encryptedSecret, password);
+        return bytes.toString(window.CryptoJS.enc.Utf8);
     } catch (e) {
         console.error("Decryption failed:", e);
         return null;
@@ -72,7 +72,7 @@ function generateMD5(input?: string|null) {
     if(!input) {
         return '';
     }
-    return CryptoJS.MD5(input).toString();
+    return window.CryptoJS.MD5(input).toString();
 }
 
 export function ConsolePage() {

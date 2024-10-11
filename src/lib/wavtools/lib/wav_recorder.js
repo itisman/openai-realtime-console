@@ -134,9 +134,10 @@ export class WavRecorder {
    * @param {...any} arguments
    * @returns {true}
    */
-  log() {
+  log(str) {
     if (this.debug) {
-      this.log(...arguments);
+        //   this.log(...arguments);
+        console.log(str);
     }
     return true;
   }

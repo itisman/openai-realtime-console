@@ -11,7 +11,6 @@
 const LOCAL_RELAY_SERVER_URL: string =
   process.env.REACT_APP_LOCAL_RELAY_SERVER_URL || '';
 
-import VConsole from 'vconsole';
 import { useEffect, useRef, useCallback, useState } from 'react';
 
 import { RealtimeClient } from '@openai/realtime-api-beta';
@@ -77,9 +76,6 @@ function generateMD5(input?: string|null) {
 }
 
 export function ConsolePage() {
-  // 初始化 vConsole
-  new VConsole();
-
   /**
    * Ask user for API Key
    * If we're using the local relay server, we don't need this
@@ -106,7 +102,7 @@ export function ConsolePage() {
    * - RealtimeClient (API client)
    */
   const wavRecorderRef = useRef<WavRecorder>(
-    new WavRecorder({ sampleRate: 24000 })
+    new WavRecorder({ sampleRate: 24000, debug: true })
   );
   const wavStreamPlayerRef = useRef<WavStreamPlayer>(
     new WavStreamPlayer({ sampleRate: 24000 })

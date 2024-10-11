@@ -59,6 +59,11 @@ export function ConsolePage() {
    * Ask user for API Key
    * If we're using the local relay server, we don't need this
    */
+  const password = localStorage.getItem('password') || prompt('Enter the password');
+  if(password !== '0505') {
+    return null;
+  }
+  localStorage.setItem('password', password);
   const apiKey = LOCAL_RELAY_SERVER_URL
     ? ''
     : localStorage.getItem('tmp::voice_api_key') ||
@@ -116,6 +121,7 @@ export function ConsolePage() {
     [key: string]: boolean;
   }>({});
   const [isConnected, setIsConnected] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
   const [canPushToTalk, setCanPushToTalk] = useState(true);
   const [isRecording, setIsRecording] = useState(false);
   const [memoryKv, setMemoryKv] = useState<{ [key: string]: any }>({});
@@ -169,7 +175,7 @@ export function ConsolePage() {
 
     // Set state variables
     startTimeRef.current = new Date().toISOString();
-    setIsConnected(true);
+    setIsConnecting(true);
     setRealtimeEvents([]);
     setItems(client.conversation.getItems());
 
@@ -181,14 +187,16 @@ export function ConsolePage() {
 
     // Connect to realtime API
     await client.connect();
+    const userText = prompt('Enter the text to start the conversation:', 'Hello') || 'Hello';
     client.sendUserMessageContent([
       {
-        type: `input_text`,
-        text: `Hello!`,
-        // text: `For testing purposes, I want you to list ten car brands. Number each item, e.g. "one (or whatever number you are one): the item name".`
+        type: 'input_text',
+        text: userText,
       },
     ]);
 
+    setIsConnecting(false);
+    setIsConnected(true);
     if (client.getTurnDetectionType() === 'server_vad') {
       await wavRecorder.record((data) => client.appendInputAudio(data.mono));
     }
@@ -198,6 +206,7 @@ export function ConsolePage() {
    * Disconnect and reset conversation state
    */
   const disconnectConversation = useCallback(async () => {
+    setIsConnecting(false);
     setIsConnected(false);
     setRealtimeEvents([]);
     setItems([]);
@@ -378,6 +387,7 @@ export function ConsolePage() {
 
     // Set instructions
     client.updateSession({ instructions: instructions });
+    // client.updateSession({ voice: 'echo' });
     // Set transcription, otherwise we don't get user transcriptions back
     client.updateSession({ input_audio_transcription: { model: 'whisper-1' } });
 
@@ -609,7 +619,7 @@ export function ConsolePage() {
                       <div>
                         {(
                           conversationItem.role || conversationItem.type
-                        ).replaceAll('_', ' ')}
+                        ).replaceAll('_', ' ').slice(0, 1).toUpperCase()}
                       </div>
                       <div
                         className="close"
@@ -663,28 +673,28 @@ export function ConsolePage() {
             </div>
           </div>
           <div className="content-actions">
-            <Toggle
+            {/* <Toggle
               defaultValue={false}
               labels={['manual', 'vad']}
               values={['none', 'server_vad']}
               onChange={(_, value) => changeTurnEndType(value)}
             />
-            <div className="spacer" />
+            <div className="spacer" /> */}
             {isConnected && canPushToTalk && (
               <Button
-                label={isRecording ? 'release to send' : 'push to talk'}
+                label={isRecording ? 'stop recording' : 'start recording'}
                 buttonStyle={isRecording ? 'alert' : 'regular'}
-                disabled={!isConnected || !canPushToTalk}
-                onMouseDown={startRecording}
-                onMouseUp={stopRecording}
+                disabled={!isConnected || !canPushToTalk || isConnecting}
+                onClick={isRecording ? stopRecording : startRecording}
               />
             )}
             <div className="spacer" />
             <Button
-              label={isConnected ? 'disconnect' : 'connect'}
+              label={isConnecting ? 'connecting...' : isConnected ? 'disconnect' : 'connect'}
               iconPosition={isConnected ? 'end' : 'start'}
               icon={isConnected ? X : Zap}
               buttonStyle={isConnected ? 'regular' : 'action'}
+              disabled={isConnecting}
               onClick={
                 isConnected ? disconnectConversation : connectConversation
               }

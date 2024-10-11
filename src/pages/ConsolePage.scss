@@ -72,6 +72,7 @@
       flex-direction: column;
       margin-left: 24px;
       gap: 24px;
+      display: none;
       & > div {
         border-radius: 16px;
         flex-grow: 1;
@@ -138,9 +139,9 @@
         flex-shrink: 0;
         width: 100%;
         overflow: hidden;
-        height: 200px;
+        height: 500px;
         min-height: 0;
-        max-height: 200px;
+        max-height: 500px;
         border-top: 1px solid #e7e7e7;
       }
     }
@@ -177,7 +178,7 @@
       position: relative;
       text-align: left;
       gap: 16px;
-      width: 80px;
+      width: 10px;
       flex-shrink: 0;
       margin-right: 16px;
       &.user {

@@ -54,21 +54,43 @@ interface RealtimeEvent {
   event: { [key: string]: any };
 }
 
+function setSecret(password: string, secret: string) {
+    return CryptoJS.AES.encrypt(secret, password).toString();
+}
+
+function getSecret(password: string, encryptedSecret: string) {
+    try {
+        const bytes = CryptoJS.AES.decrypt(encryptedSecret, password);
+        return bytes.toString(CryptoJS.enc.Utf8);
+    } catch (e) {
+        console.error("Decryption failed:", e);
+        return null;
+    }
+}
+
+function generateMD5(input?: string|null) {
+    if(!input) {
+        return '';
+    }
+    return CryptoJS.MD5(input).toString();
+}
+
 export function ConsolePage() {
   /**
    * Ask user for API Key
    * If we're using the local relay server, we don't need this
    */
-  const password = localStorage.getItem('password') || prompt('Enter the password');
-  if(password !== '0505') {
+  const password = (localStorage.getItem('password') || prompt('Enter the password')) || '';
+  if(generateMD5(password) !== 'fa246d0262c3925617b0c72bb20eeb1d') {
+    localStorage.removeItem('password');
     return null;
   }
   localStorage.setItem('password', password);
   const apiKey = LOCAL_RELAY_SERVER_URL
     ? ''
     : localStorage.getItem('tmp::voice_api_key') ||
-      prompt('OpenAI API Key') ||
-      '';
+    //   prompt('OpenAI API Key') ||
+    getSecret(password, 'U2FsdGVkX19dbvYoDJynlZLWd2NGPs/HUPU+d2NwEKt4HLIScY/UizbmtoqPxEBq+9U5EILf++HYTJKOXw98LylWxbOuvspU3KCecf1hCNM=') || '';
   if (apiKey !== '') {
     localStorage.setItem('tmp::voice_api_key', apiKey);
   }

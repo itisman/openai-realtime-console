@@ -76,7 +76,6 @@ function generateMD5(input?: string|null) {
 }
 
 export function ConsolePage() {
-  console.log('page init');
   /**
    * Ask user for API Key
    * If we're using the local relay server, we don't need this
@@ -696,16 +695,16 @@ export function ConsolePage() {
             </div>
           </div>
           <div className="content-actions">
-            {/* <Toggle
+            <Toggle
               defaultValue={false}
-              labels={['manual', 'vad']}
+              labels={['M', 'V']}
               values={['none', 'server_vad']}
               onChange={(_, value) => changeTurnEndType(value)}
             />
-            <div className="spacer" /> */}
+            <div className="spacer" />
             {isConnected && canPushToTalk && (
               <Button
-                label={isRecording ? 'stop recording' : 'start recording'}
+                label={isRecording ? 'stop' : 'start'}
                 buttonStyle={isRecording ? 'alert' : 'regular'}
                 disabled={!isConnected || !canPushToTalk || isConnecting}
                 onClick={isRecording ? stopRecording : startRecording}
